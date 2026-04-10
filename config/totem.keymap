@@ -9,20 +9,15 @@
 //
 // ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
 
-#define ZMK_POINTING_DEFAULT_MOVE_VAL 1800  // default: 600
-#define ZMK_POINTING_DEFAULT_SCRL_VAL 30    // default: 10
-
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/outputs.h>
-#include <dt-bindings/zmk/pointing.h>
 
 #define BASE 0
-#define NAV  1
-#define SYM  2
-#define ADJ  3
-#define NAVTWO 4
+#define NUM  1
+#define NAV  2
+#define SYS  3
 
 &mt {
     quick-tap-ms = <100>;
@@ -80,13 +75,6 @@
 
         // --- Tap Dance ---
 
-        td_0: behavior_tap_dance0 {
-            compatible = "zmk,behavior-tap-dance";
-            tapping-term-ms = <190>;
-            #binding-cells = <0>;
-            bindings = <&kp LEFT_SHIFT>, <&kp LEFT_GUI>, <&kp LEFT_ALT>;
-        };
-
         td_1: behavior_tap_dance1 {
             compatible = "zmk,behavior-tap-dance";
             tapping-term-ms = <120>;
@@ -118,6 +106,15 @@
             #binding-cells = <0>;
         };
 
+        mt_s: mod_tap_s {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            quick-tap-ms = <100>;
+            require-prior-idle-ms = <150>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <170>;
+            bindings = <&kp>, <&td_1>;
+        };
 
     };
 
@@ -128,7 +125,7 @@
             timeout-ms = <50>;
             key-positions = <0 1>;
             bindings = <&kp ESC>;
-            layers = <0>;
+            layers = <BASE>;
         };
 
         enter {
@@ -141,19 +138,20 @@
             key-positions = <29 28>;
         };
 
-        nav {
-            bindings = <&mo 1>;
+        num {
+            bindings = <&mo NUM>;
             key-positions = <23 24>;
         };
 
-        navtwo {
-            bindings = <&mo 4>;
-            key-positions = <33 36>;
-            timeout-ms = <50>;
-        };
     };
 
-    macros {
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+
+        system_layer {
+            if-layers = <NUM NAV>;
+            then-layer = <SYS>;
+        };
     };
 
     keymap {
@@ -170,18 +168,44 @@
             //             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
             //             ┃     Q     ┃     W     ┃     E     ┃     R     ┃     T     ┃   ┃     Y     ┃   U (ü/Ü) ┃     I     ┃   O (ö/Ö) ┃     P     ┃
             //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
-            //             ┃   A (ä/Ä) ┃   S (ß)   ┃ (D, LGUI) ┃ (F, LSFT) ┃ (G, LALT) ┃   ┃ (H, LCTL) ┃ (J, LSFT) ┃ (K, LGUI) ┃ (L, LALT) ┃     /     ┃
+            //             ┃   A (ä/Ä) ┃(S, LSFT/ß)┃ (D, LCTL) ┃ (F, LALT) ┃ (G, LGUI) ┃   ┃ (H, RGUI) ┃ (J, RALT) ┃ (K, RCTL) ┃ (L, RSFT) ┃     /     ┃
             // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
-            // ┃   NONE    ┃     Z     ┃     X     ┃     C     ┃     V     ┃     B     ┃   ┃     N     ┃     M     ┃   COMMA   ┃    DOT    ┃   MINUS   ┃   NONE    ┃
+            // ┃    ESC    ┃     Z     ┃     X     ┃     C     ┃     V     ┃     B     ┃   ┃     N     ┃     M     ┃   COMMA   ┃    DOT    ┃   SEMI    ┃   MINUS   ┃
             // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
-            //                                     ┃   LCMD    ┃ (SYM,TAB) ┃   SPACE   ┃   ┃   ENTER   ┃ (NAV,DEL) ┃   BSPC    ┃
+            //                                     ┃   LCMD    ┃ (NUM,TAB) ┃   SPACE   ┃   ┃   ENTER   ┃ (NAV,DEL) ┃   BSPC    ┃
             //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
 
             bindings = <
-       &kp Q  &kp W  &kp E             &kp R        &kp T             &kp Y               &td_4          &kp I              &td_3           &kp P
-       &td_2  &td_1  &mt LGUI D        &mt LSHFT F  &mt LEFT_ALT G    &mt LEFT_CONTROL H  &mt LSHIFT J   &mt LGUI K         &mt LEFT_ALT L  &kp SLASH
-&none  &kp Z  &kp X  &kp C             &kp V        &kp B             &kp N               &kp M          &kp COMMA          &kp DOT         &kp MINUS  &none
-                     &kp LEFT_GUI      &lt 2 TAB    &kp SPACE         &kp ENTER           &lt 1 DEL      &kp BACKSPACE
+       &kp Q  &kp W          &kp E          &kp R        &kp T          &kp Y          &td_4          &kp I        &td_3          &kp P
+       &td_2  &mt_s LSHFT 0  &mt LCTRL D    &mt LALT F   &mt LGUI G     &mt RGUI H     &mt RALT J     &mt RCTRL K  &mt RSHFT L    &kp SLASH
+&kp ESC &kp Z  &kp X          &kp C          &kp V        &kp B          &kp N          &kp M          &kp COMMA    &kp DOT        &kp SEMI    &kp MINUS
+                            &kp LEFT_GUI    &lt NUM TAB  &kp SPACE      &kp ENTER      &lt NAV DEL    &kp BACKSPACE
+            >;
+        };
+
+        // ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+
+        num_layer {
+            // ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+
+            label = "NUM";
+
+            // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+            //             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
+            //             ┃     '     ┃     "     ┃   GRAVE   ┃   TILDE   ┃   LBKT    ┃   ┃   RBKT    ┃    N7     ┃    N8     ┃    N9     ┃    N0     ┃
+            //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
+            //             ┃   SEMI    ┃   COLON   ┃   SLASH   ┃  BSLASH   ┃   LPAR    ┃   ┃   RPAR    ┃    N4     ┃    N5     ┃    N6     ┃   EQUAL   ┃
+            // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
+            // ┃   LSFT    ┃    LT     ┃    GT     ┃ UNDERSCORE┃   PIPE    ┃  LBRACE   ┃   ┃  RBRACE   ┃    N1     ┃    N2     ┃    N3     ┃   MINUS   ┃   RSFT    ┃
+            // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+            //                                     ┃   TRANS   ┃   TRANS   ┃   TRANS   ┃   ┃   TRANS   ┃   TRANS   ┃   TRANS   ┃
+            //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+
+            bindings = <
+       &kp SINGLE_QUOTE  &kp DOUBLE_QUOTES  &kp GRAVE        &kp TILDE      &kp LBKT        &kp RBKT         &kp N7  &kp N8  &kp N9  &kp N0
+       &kp SEMI          &kp COLON          &kp SLASH        &kp BACKSLASH  &kp LPAR        &kp RPAR         &kp N4  &kp N5  &kp N6  &kp EQUAL
+&kp LEFT_SHIFT  &kp LESS_THAN  &kp GREATER_THAN  &kp UNDERSCORE  &kp PIPE       &kp LEFT_BRACE  &kp RIGHT_BRACE  &kp N1  &kp N2  &kp N3  &kp MINUS  &kp RIGHT_SHIFT
+                                             &trans          &trans         &trans          &trans           &trans  &trans
             >;
         };
 
@@ -190,100 +214,50 @@
         nav_layer {
             // ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 
-            label = "NAVI";
+            label = "NAV";
 
             // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
             //             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
-            //             ┃  BT_NXT   ┃ BT_SEL 0  ┃ BT_SEL 3  ┃  BT_CLR   ┃   NONE    ┃   ┃ KP_EQUAL  ┃    N7     ┃    N8     ┃    N9     ┃  KP_PLUS  ┃
+            //             ┃    F1     ┃    F4     ┃    F7     ┃   F10     ┃   NONE    ┃   ┃  PG_UP    ┃   HOME    ┃    END    ┃    INS    ┃   NONE    ┃
             //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
-            //             ┃  BT_PRV   ┃ BT_SEL 1  ┃ BT_SEL 4  ┃   NONE    ┃   NONE    ┃   ┃  PERIOD   ┃    N4     ┃    N5     ┃    N6     ┃ KP_MINUS  ┃
+            //             ┃    F2     ┃    F5     ┃    F8     ┃   F11     ┃   NONE    ┃   ┃   LEFT    ┃   DOWN    ┃    UP     ┃   RIGHT   ┃   NONE    ┃
             // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
-            // ┃   NONE    ┃  OUT_TOG  ┃ BT_SEL 2  ┃   NONE    ┃   NONE    ┃   CAPS    ┃   ┃    N0     ┃    N1     ┃    N2     ┃    N3     ┃ KP_EQUAL  ┃   NONE    ┃
-            // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
-            //                                     ┃   NONE    ┃(LSFT, =)  ┃(LGUI, .)  ┃   ┃   ENTER   ┃   BSPC    ┃   NONE    ┃
-            //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
-
-            bindings = <
-       &bt BT_NXT    &bt BT_SEL 0  &bt BT_SEL 3  &bt BT_CLR            &none                  &kp KP_EQUAL  &kp N7         &kp N8  &kp N9  &kp KP_PLUS
-       &bt BT_PRV    &bt BT_SEL 1  &bt BT_SEL 4  &none                 &none                  &kp PERIOD    &kp N4         &kp N5  &kp N6  &kp KP_MINUS
-&none  &out OUT_TOG  &bt BT_SEL 2  &none         &none                 &kp CAPS               &kp N0        &kp N1         &kp N2  &kp N3  &kp KP_EQUAL  &none
-                                   &none         &mt LEFT_SHIFT EQUAL  &mt LEFT_GUI PERIOD    &kp ENTER     &kp BACKSPACE  &none
-            >;
-        };
-
-        // ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-
-        sim_layer {
-            // ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-
-            label = "SYM";
-
-            // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-            //             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
-            //             ┃   EXCL    ┃     "     ┃   HASH    ┃   DLLR    ┃   PRCNT   ┃   ┃   LBKT    ┃   RBKT    ┃  SCRL_UP  ┃    MB3    ┃    MB2    ┃
-            //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
-            //             ┃    AT     ┃     '     ┃   CARET   ┃   COLON   ┃   AMPS    ┃   ┃   LPAR    ┃   RPAR    ┃  SCRL_DN  ┃    MB1    ┃ MOVE_UP   ┃
-            // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
-            // ┃   NONE    ┃  BSLASH   ┃   GRAVE   ┃   TILDE   ┃   STAR    ┃   PIPE    ┃   ┃  LBRACE   ┃  RBRACE   ┃   NONE    ┃ MOVE_LEFT ┃ MOVE_DOWN ┃ MOVE_RIGHT┃
-            // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
-            //                                     ┃   NONE    ┃   NONE    ┃   NONE    ┃   ┃   VOL-    ┃   VOL+    ┃   MUTE    ┃
-            //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
-
-            bindings = <
-       &kp EXCL       &kp DOUBLE_QUOTES  &kp HASH   &kp DLLR   &kp PRCNT    &kp LBKT        &kp RBKT         &msc SCRL_UP    &mkp MB3        &mkp MB2
-       &kp AT         &kp SINGLE_QUOTE   &kp CARET  &kp COLON  &kp AMPS     &kp LPAR        &kp RPAR         &msc SCRL_DOWN  &mkp MB1        &mmv MOVE_UP
-&none  &kp BACKSLASH  &kp GRAVE          &kp TILDE  &kp STAR   &kp PIPE     &kp LEFT_BRACE  &kp RIGHT_BRACE  &none           &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_RIGHT
-                                         &none      &none      &none        &kp C_VOL_DN    &kp C_VOLUME_UP  &kp C_MUTE
-            >;
-        };
-
-        // ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
-
-        adjust_layer {
-            // ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-
-            label = "ADJ";
-
-            // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-            //             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
-            //             ┃           ┃           ┃           ┃           ┃           ┃   ┃           ┃           ┃           ┃           ┃           ┃
-            //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
-            //             ┃           ┃           ┃           ┃           ┃           ┃   ┃           ┃           ┃           ┃           ┃           ┃
-            // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
-            // ┃           ┃           ┃           ┃           ┃           ┃           ┃   ┃           ┃           ┃           ┃           ┃           ┃           ┃
-            // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
-            //                                     ┃           ┃           ┃           ┃   ┃           ┃           ┃           ┃
-            //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
-
-            bindings = <
-        &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans
-        &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans  &trans    &trans  &trans  &trans  &trans  &trans  &trans
-                        &trans  &trans  &trans    &trans  &trans  &trans
-            >;
-        };
-
-        navtwo {
-            // ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-
-            label = "NAVTWO";
-
-            // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-            //             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
-            //             ┃    F1     ┃    F4     ┃    F7     ┃   F10     ┃   NONE    ┃   ┃   NONE    ┃   HOME    ┃    END    ┃    INS    ┃   NONE    ┃
-            //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
-            //             ┃    F2     ┃    F5     ┃    F8     ┃   F11     ┃   NONE    ┃   ┃  PG_UP    ┃   LEFT    ┃    UP     ┃   RIGHT   ┃   NONE    ┃
-            // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
-            // ┃  LEFT_ALT ┃    F3     ┃    F6     ┃    F9     ┃   F12     ┃   NONE    ┃   ┃  PG_DN    ┃    DEL    ┃   DOWN    ┃   NONE    ┃   NONE    ┃   LSHFT   ┃
+            // ┃  LEFT_ALT ┃    F3     ┃    F6     ┃    F9     ┃   F12     ┃   NONE    ┃   ┃  PG_DN    ┃    DEL    ┃   NONE    ┃   NONE    ┃   NONE    ┃   LSHFT   ┃
             // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
             //                                     ┃   TRANS   ┃   TRANS   ┃   TRANS   ┃   ┃   TRANS   ┃   TRANS   ┃   TRANS   ┃
             //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
 
             bindings = <
-              &kp F1  &kp F4  &kp F7       &kp F10   &none            &none      &kp HOME  &kp END         &kp INS    &none
-              &kp F2  &kp F5  &kp F8       &kp F11   &none            &kp PG_UP  &kp LEFT  &kp UP_ARROW    &kp RIGHT  &none
-&kp LEFT_ALT  &kp F3  &kp F6  &kp F9       &kp F12   &none            &kp PG_DN  &kp DEL   &kp DOWN_ARROW  &none      &none  &kp LEFT_SHIFT
+              &kp F1  &kp F4  &kp F7       &kp F10   &none            &kp PG_UP  &kp HOME        &kp END       &kp INS    &none
+              &kp F2  &kp F5  &kp F8       &kp F11   &none            &kp LEFT   &kp DOWN_ARROW  &kp UP_ARROW  &kp RIGHT  &none
+&kp LEFT_ALT  &kp F3  &kp F6  &kp F9       &kp F12   &none            &kp PG_DN  &kp DEL         &none         &none      &none  &kp LEFT_SHIFT
                               &trans       &trans    &trans           &trans     &trans    &trans
+            >;
+        };
+
+        // ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+
+        sys_layer {
+            // ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+
+            label = "SYS";
+
+            // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+            //             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
+            //             ┃  BT_NXT   ┃ BT_SEL 0  ┃ BT_SEL 3  ┃  BT_CLR   ┃   NONE    ┃   ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃
+            //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
+            //             ┃  BT_PRV   ┃ BT_SEL 1  ┃ BT_SEL 4  ┃   NONE    ┃   NONE    ┃   ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃
+            // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
+            // ┃   NONE    ┃  OUT_TOG  ┃ BT_SEL 2  ┃   NONE    ┃   NONE    ┃   NONE    ┃   ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃
+            // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+            //                                     ┃   TRANS   ┃   TRANS   ┃   TRANS   ┃   ┃   TRANS   ┃   TRANS   ┃   TRANS   ┃
+            //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
+
+            bindings = <
+       &bt BT_NXT    &bt BT_SEL 0  &bt BT_SEL 3  &bt BT_CLR  &none    &none  &none  &none  &none  &none
+       &bt BT_PRV    &bt BT_SEL 1  &bt BT_SEL 4  &none       &none    &none  &none  &none  &none  &none
+&none  &out OUT_TOG  &bt BT_SEL 2  &none         &none       &none    &none  &none  &none  &none  &none  &none
+                                   &trans        &trans      &trans   &trans &trans &trans
             >;
         };
     };
