@@ -19,6 +19,9 @@
 #define NAV  2
 #define SYS  3
 
+#define LEFT_HAND_KEYS  0 1 2 3 4 10 11 12 13 14 20 21 22 23 24 25 32 33 34
+#define RIGHT_HAND_KEYS 5 6 7 8 9 15 16 17 18 19 26 27 28 29 30 31 35 36 37
+
 &mt {
     quick-tap-ms = <100>;
     require-prior-idle-ms = <150>;
@@ -30,9 +33,9 @@
     behaviors {
         // --- Makros ---
 
-        macro_3: macro3 {
+        macss: macss {
             compatible = "zmk,behavior-macro";
-            bindings = <&kp RA(S)>;
+            bindings = <&kp RA(N4)>;
             #binding-cells = <0>;
         };
 
@@ -77,23 +80,23 @@
 
         td_1: behavior_tap_dance1 {
             compatible = "zmk,behavior-tap-dance";
-            tapping-term-ms = <120>;
+            tapping-term-ms = <170>;
             #binding-cells = <0>;
-            bindings = <&kp S>, <&macro_3>;
+            bindings = <&kp S>, <&kp RA(S)>, <&kp LS(RA(S))>, <&macss>;
         };
 
         td_2: behavior_tap_dance2 {
             compatible = "zmk,behavior-tap-dance";
             tapping-term-ms = <170>;
-            bindings = <&kp A>, <&macae>, <&macaeupper>;
+            bindings = <&kp A>, <&kp RA(A)>, <&kp LS(RA(A))>, <&macae>, <&macaeupper>;
 
             #binding-cells = <0>;
         };
 
         td_3: behavior_tap_dance3 {
             compatible = "zmk,behavior-tap-dance";
-            tapping-term-ms = <160>;
-            bindings = <&kp O>, <&macoe>, <&macoeupper>;
+            tapping-term-ms = <170>;
+            bindings = <&kp O>, <&kp RA(O)>, <&kp LS(RA(O))>, <&macoe>, <&macoeupper>;
 
             #binding-cells = <0>;
         };
@@ -106,14 +109,87 @@
             #binding-cells = <0>;
         };
 
-        mt_s: mod_tap_s {
+        td_c: behavior_tap_dance_c {
+            compatible = "zmk,behavior-tap-dance";
+            tapping-term-ms = <170>;
+            #binding-cells = <0>;
+            bindings = <&kp C>, <&kp RA(C)>, <&kp LS(RA(C))>;
+        };
+
+        td_e: behavior_tap_dance_e {
+            compatible = "zmk,behavior-tap-dance";
+            tapping-term-ms = <170>;
+            #binding-cells = <0>;
+            bindings = <&kp E>, <&kp RA(E)>, <&kp LS(RA(E))>;
+        };
+
+        td_l: behavior_tap_dance_l {
+            compatible = "zmk,behavior-tap-dance";
+            tapping-term-ms = <170>;
+            #binding-cells = <0>;
+            bindings = <&kp L>, <&kp RA(L)>, <&kp LS(RA(L))>;
+        };
+
+        td_n: behavior_tap_dance_n {
+            compatible = "zmk,behavior-tap-dance";
+            tapping-term-ms = <170>;
+            #binding-cells = <0>;
+            bindings = <&kp N>, <&kp RA(N)>, <&kp LS(RA(N))>;
+        };
+
+        td_z: behavior_tap_dance_z {
+            compatible = "zmk,behavior-tap-dance";
+            tapping-term-ms = <170>;
+            #binding-cells = <0>;
+            bindings = <&kp Z>, <&kp RA(Z)>, <&kp LS(RA(Z))>, <&kp RA(X)>, <&kp LS(RA(X))>;
+        };
+
+        hml: homerow_mod_left {
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
-            quick-tap-ms = <100>;
+            quick-tap-ms = <175>;
             require-prior-idle-ms = <150>;
-            flavor = "tap-preferred";
-            tapping-term-ms = <170>;
+            flavor = "balanced";
+            tapping-term-ms = <280>;
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <RIGHT_HAND_KEYS>;
+            hold-trigger-on-release;
+        };
+
+        hmr: homerow_mod_right {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            flavor = "balanced";
+            tapping-term-ms = <280>;
+            bindings = <&kp>, <&kp>;
+            hold-trigger-key-positions = <LEFT_HAND_KEYS>;
+            hold-trigger-on-release;
+        };
+
+        hml_td: homerow_mod_left_tap_dance {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            flavor = "balanced";
+            tapping-term-ms = <280>;
             bindings = <&kp>, <&td_1>;
+            hold-trigger-key-positions = <RIGHT_HAND_KEYS>;
+            hold-trigger-on-release;
+        };
+
+        hmr_td: homerow_mod_right_tap_dance {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            quick-tap-ms = <175>;
+            require-prior-idle-ms = <150>;
+            flavor = "balanced";
+            tapping-term-ms = <280>;
+            bindings = <&kp>, <&td_l>;
+            hold-trigger-key-positions = <LEFT_HAND_KEYS>;
+            hold-trigger-on-release;
         };
 
     };
@@ -166,19 +242,19 @@
 
             // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
             //             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
-            //             ┃     Q     ┃     W     ┃     E     ┃     R     ┃     T     ┃   ┃     Y     ┃   U (ü/Ü) ┃     I     ┃   O (ö/Ö) ┃     P     ┃
+            //             ┃     Q     ┃     W     ┃   E (ę/Ę) ┃     R     ┃     T     ┃   ┃     Y     ┃     U     ┃     I     ┃ O (ó/Ó/ö/Ö)┃     P     ┃
             //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
-            //             ┃   A (ä/Ä) ┃(S, LSFT/ß)┃ (D, LCTL) ┃ (F, LALT) ┃ (G, LGUI) ┃   ┃ (H, RGUI) ┃ (J, RALT) ┃ (K, RCTL) ┃ (L, RSFT) ┃     /     ┃
+            //             ┃ A (ą/Ą/ä/Ä)┃(S,LSFT/ś/Ś/ß)┃(D,LCTL)┃ (F,LALT) ┃ (G,LGUI) ┃   ┃ (H,RGUI) ┃ (J,RALT) ┃ (K,RCTL) ┃(L,RSFT/ł/Ł)┃    /     ┃
             // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
-            // ┃    ESC    ┃     Z     ┃     X     ┃     C     ┃     V     ┃     B     ┃   ┃     N     ┃     M     ┃   COMMA   ┃    DOT    ┃   SEMI    ┃   MINUS   ┃
+            // ┃    ESC    ┃ Z (ż/Ż/ź/Ź)┃    X     ┃   C (ć/Ć) ┃     V     ┃     B     ┃   ┃   N (ń/Ń) ┃     M     ┃   COMMA   ┃    DOT    ┃   SEMI    ┃   MINUS   ┃
             // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
             //                                     ┃   LCMD    ┃ (NUM,TAB) ┃   SPACE   ┃   ┃   ENTER   ┃ (NAV,DEL) ┃   BSPC    ┃
             //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
 
             bindings = <
-       &kp Q  &kp W          &kp E          &kp R        &kp T          &kp Y          &td_4          &kp I        &td_3          &kp P
-       &td_2  &mt_s LSHFT 0  &mt LCTRL D    &mt LALT F   &mt LGUI G     &mt RGUI H     &mt RALT J     &mt RCTRL K  &mt RSHFT L    &kp SLASH
-&kp ESC &kp Z  &kp X          &kp C          &kp V        &kp B          &kp N          &kp M          &kp COMMA    &kp DOT        &kp SEMI    &kp MINUS
+       &kp Q  &kp W            &td_e          &kp R        &kp T          &kp Y          &kp U          &kp I        &td_3          &kp P
+       &td_2  &hml_td LSHFT 0  &hml LCTRL D   &hml LALT F  &hml LGUI G    &hmr RGUI H    &hmr RALT J    &hmr RCTRL K  &hmr_td RSHFT 0  &kp SLASH
+&kp ESC &td_z  &kp X           &td_c          &kp V        &kp B          &td_n          &kp M          &kp COMMA    &kp DOT        &kp SEMI    &kp MINUS
                             &kp LEFT_GUI    &lt NUM TAB  &kp SPACE      &kp ENTER      &lt NAV DEL    &kp BACKSPACE
             >;
         };
@@ -218,20 +294,20 @@
 
             // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
             //             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
-            //             ┃    F1     ┃    F4     ┃    F7     ┃   F10     ┃   NONE    ┃   ┃  PG_UP    ┃   HOME    ┃    END    ┃    INS    ┃   NONE    ┃
+            //             ┃ A(ą/Ą/ä/Ä)┃  C(ć/Ć)  ┃  E(ę/Ę)  ┃   NONE    ┃   NONE    ┃   ┃  PG_UP    ┃   HOME    ┃    END    ┃    INS    ┃   NONE    ┃
             //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
-            //             ┃    F2     ┃    F5     ┃    F8     ┃   F11     ┃   NONE    ┃   ┃   LEFT    ┃   DOWN    ┃    UP     ┃   RIGHT   ┃   NONE    ┃
+            //             ┃  L(ł/Ł)  ┃  N(ń/Ń)  ┃O(ó/Ó/ö/Ö)┃   NONE    ┃   NONE    ┃   ┃   LEFT    ┃   DOWN    ┃    UP     ┃   RIGHT   ┃   NONE    ┃
             // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
-            // ┃  LEFT_ALT ┃    F3     ┃    F6     ┃    F9     ┃   F12     ┃   NONE    ┃   ┃  PG_DN    ┃    DEL    ┃   NONE    ┃   NONE    ┃   NONE    ┃   LSHFT   ┃
+            // ┃  LEFT_ALT ┃S(ś/Ś/ß)  ┃  U(ü/Ü)  ┃Z(ż/Ż/ź/Ź)┃   NONE    ┃   NONE    ┃   ┃  PG_DN    ┃    DEL    ┃   NONE    ┃   NONE    ┃   NONE    ┃   LSHFT   ┃
             // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
             //                                     ┃   TRANS   ┃   TRANS   ┃   TRANS   ┃   ┃   TRANS   ┃   TRANS   ┃   TRANS   ┃
             //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
 
             bindings = <
-              &kp F1  &kp F4  &kp F7       &kp F10   &none            &kp PG_UP  &kp HOME        &kp END       &kp INS    &none
-              &kp F2  &kp F5  &kp F8       &kp F11   &none            &kp LEFT   &kp DOWN_ARROW  &kp UP_ARROW  &kp RIGHT  &none
-&kp LEFT_ALT  &kp F3  &kp F6  &kp F9       &kp F12   &none            &kp PG_DN  &kp DEL         &none         &none      &none  &kp LEFT_SHIFT
-                              &trans       &trans    &trans           &trans     &trans    &trans
+              &td_2  &td_c   &td_e         &none    &none            &kp PG_UP  &kp HOME        &kp END       &kp INS    &none
+              &td_l  &td_n   &td_3         &none    &none            &kp LEFT   &kp DOWN_ARROW  &kp UP_ARROW  &kp RIGHT  &none
+&kp LEFT_ALT  &td_1  &td_4   &td_z         &none    &none            &kp PG_DN  &kp DEL         &none         &none      &none  &kp LEFT_SHIFT
+                              &trans       &trans   &trans           &trans     &trans    &trans
             >;
         };
 
@@ -244,20 +320,20 @@
 
             // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
             //             ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓   ┏━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┳━━━━━━━━━━━┓
-            //             ┃  BT_NXT   ┃ BT_SEL 0  ┃ BT_SEL 3  ┃  BT_CLR   ┃   NONE    ┃   ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃
+            //             ┃  BT_NXT   ┃ BT_SEL 0  ┃ BT_SEL 3  ┃  BT_CLR   ┃   NONE    ┃   ┃    F1     ┃    F4     ┃    F7     ┃   F10     ┃   NONE    ┃
             //             ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫
-            //             ┃  BT_PRV   ┃ BT_SEL 1  ┃ BT_SEL 4  ┃   NONE    ┃   NONE    ┃   ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃
+            //             ┃  BT_PRV   ┃ BT_SEL 1  ┃ BT_SEL 4  ┃   NONE    ┃   NONE    ┃   ┃    F2     ┃    F5     ┃    F8     ┃   F11     ┃   NONE    ┃
             // ┏━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┓
-            // ┃   NONE    ┃  OUT_TOG  ┃ BT_SEL 2  ┃   NONE    ┃   NONE    ┃   NONE    ┃   ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃   NONE    ┃
+            // ┃   NONE    ┃  OUT_TOG  ┃ BT_SEL 2  ┃   NONE    ┃   NONE    ┃   NONE    ┃   ┃    F3     ┃    F6     ┃    F9     ┃   F12     ┃   NONE    ┃   NONE    ┃
             // ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┫   ┣━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━╋━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
             //                                     ┃   TRANS   ┃   TRANS   ┃   TRANS   ┃   ┃   TRANS   ┃   TRANS   ┃   TRANS   ┃
             //                                     ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛   ┗━━━━━━━━━━━┻━━━━━━━━━━━┻━━━━━━━━━━━┛
 
             bindings = <
-       &bt BT_NXT    &bt BT_SEL 0  &bt BT_SEL 3  &bt BT_CLR  &none    &none  &none  &none  &none  &none
-       &bt BT_PRV    &bt BT_SEL 1  &bt BT_SEL 4  &none       &none    &none  &none  &none  &none  &none
-&none  &out OUT_TOG  &bt BT_SEL 2  &none         &none       &none    &none  &none  &none  &none  &none  &none
-                                   &trans        &trans      &trans   &trans &trans &trans
+       &bt BT_NXT    &bt BT_SEL 0  &bt BT_SEL 3  &bt BT_CLR  &none    &kp F1  &kp F4  &kp F7  &kp F10  &none
+       &bt BT_PRV    &bt BT_SEL 1  &bt BT_SEL 4  &none       &none    &kp F2  &kp F5  &kp F8  &kp F11  &none
+&none  &out OUT_TOG  &bt BT_SEL 2  &none         &none       &none    &kp F3  &kp F6  &kp F9  &kp F12  &none  &none
+                                   &trans        &trans      &trans   &trans  &trans  &trans
             >;
         };
     };
